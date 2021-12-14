@@ -1,4 +1,4 @@
-;;; advent.el --- Adevnt Of Code - 1 -*- lexical-binding: t; -*-
+;;; advent.el --- Advent Of Code - 1 -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2021 Athul Suresh
 ;;
@@ -15,34 +15,59 @@
 ;;
 ;;; Commentary:
 ;;
-;;  Adevnt Of Code - 1
+;;  Advent Of Code - 1
 ;;
 ;;; Code:
 
 (defun advent-1 ()
   "Solution to problem 1."
   (interactive)
-  (goto-char (point-min))
-  (let ((prev-depth 'nil)
-        (num-increase 0))
-    (while (not (eobp))
-      (let ((depth (advent-get-depth)))
-        (if (advent-is-depth-increasing-p depth
-                                          prev-depth)
-            (setq num-increase (+ num-increase 1)))
-        (setq prev-depth depth))
-      (forward-line 1))
-    (message "Answer is %d"
-             num-increase)))
+  (save-excursion
+    (goto-char (point-min))
+    ;; set the initial state
+    ;; is there a better way to set the state and update it?
+    (let ((prev-depth (advent-read-depth))
+          (num-increase 0))
+      (while (not (eobp))
+        (let ((depth (advent-read-depth)))
+          (if (> depth prev-depth)
+              (setq num-increase (1+ num-increase)))
+          (setq prev-depth depth))
+        (forward-line 1))
+      (message "Answer is %d"
+               num-increase))))
 
-(defun advent-get-depth ()
+(defun advent-read-depth ()
   "Read the depth from the current file."
   (string-to-number (buffer-substring-no-properties (line-beginning-position)
                                                     (line-end-position))))
 
-(defun advent-is-depth-increasing-p (depth prev-depth)
-  "Check if the DEPTH is increasing by comparing against PREV-DEPTH."
-  (and prev-depth (> depth prev-depth)))
+
+(defun advent-1-2 ()
+  "Solution to problem 1 part 2."
+  (interactive)
+  (goto-char (point-min))
+  (save-excursion
+    (let ((prev-depth (advent-read-window 3))
+          (num-increase 0))
+      (while (not (eobp))
+        (let ((current-depth (append (cdr prev-depth) (list (advent-read-depth)))))
+          (if (> (apply '+ current-depth) (apply '+ prev-depth))
+              (setq num-increase (1+ num-increase)))
+          (setq prev-depth current-depth))
+        (forward-line 1))
+      (message "Answer is %d"
+               num-increase))))
+
+(defun advent-read-window (n)
+  "Read a list of N lines constituting a window."
+  (let ((window '()))
+    (while (and (not (eobp)) (> n 0))
+      (setq window (append window (list (advent-read-depth))))
+      (setq n (1- n))
+      (forward-line 1))
+    window))
+
 
 (provide 'advent)
 ;;; advent.el ends here
