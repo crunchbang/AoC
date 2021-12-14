@@ -1,0 +1,9 @@
+#+TITLE: README
+
+* Advent Of Code 2021 in Emacs Lisp
+
+#+begin_quote
+“Your scientists were so preoccupied with whether they could, they didn't stop to think if they should.”
+#+end_quote
+
+Each file exports an interactive function that can be run on the AoC sample input file to get the answer.
